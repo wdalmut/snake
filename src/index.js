@@ -4,7 +4,7 @@ const {
   cond, T, compose, flip, modulo, equals,
   always, path, identity, mergeDeepLeft,
   tap, apply, props, multiply, not, lt,
-  gt, and, assoc, pick, lens, over
+  gt, and, assoc, pick, lens, over, dec
 } = require('ramda')
 
 const {
@@ -49,7 +49,7 @@ const is_going_up = converge(and, [is_pressed('ArrowUp'), is_not_going_down])
 const is_going_left = converge(and, [is_pressed('ArrowLeft'), is_not_going_right])
 const is_going_right = converge(and, [is_pressed('ArrowRight'), is_not_going_left])
 
-const grow_snake_and_create_food = compose(evolve({food: create_food}), grow_snake)
+const grow_snake_and_create_food = compose(evolve({speed: dec, food: create_food}), grow_snake)
 
 const set_direction = cond([
   [is_going_down, mergeDeepLeft({dx: 0, dy: BLOCK_SIZE})],
@@ -62,7 +62,7 @@ const set_direction = cond([
 const game_step = cond([
   [is_eating_itself, reset_game],
   [is_eating, grow_snake_and_create_food],
-  [T, move_snake],
+  [otherwise, move_snake],
 ])
 
 const apply_state = compose(game_step, set_direction)
@@ -87,10 +87,11 @@ const draw_food = compose(draw_red_dot, prop('food'))
     clear_all(state)
     draw_snake(state)
     draw_food(state)
+
+    setTimeout(play, state.speed)
   }
 
   setImmediate(play)
-  let id = setInterval(play, state.speed)
 
   canvas.addEventListener("keydown", (event) => {
     state = assoc('direction', prop('key', event), state)

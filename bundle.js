@@ -12385,7 +12385,7 @@ const red_dot = create_dot('red')
 
 const draw_black_dot = converge(black_dot, [prop('x'), prop('y')])
 const draw_red_dot = converge(red_dot, [prop('x'), prop('y')])
-const clear_all = compose(partial(clear, [canvas.getContext('2d'), 0, 0, WIDTH, HEIGHT]))
+const clear_all = partial(clear, [canvas.getContext('2d'), 0, 0, WIDTH, HEIGHT])
 
 const draw_snake = compose(map(draw_black_dot), prop('snake'))
 const draw_food = compose(draw_red_dot, prop('food'))

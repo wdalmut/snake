@@ -12438,7 +12438,6 @@ module.exports = (width, height) => {
   canvas.width = width
   canvas.height = height
   canvas.style = 'border: 2px solid #000;'
-  let context = canvas.getContext('2d');
 
   document.getElementsByTagName('body').item(0).appendChild(canvas)
 

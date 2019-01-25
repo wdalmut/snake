@@ -14,7 +14,7 @@ describe("Clear", () => {
   it("should call the clearRect method", () => {
     spyOn(context, 'clearRect').and.callThrough();
 
-    clear(context, 0, 0, 300, 300)
+    clear(0, 0, 300, 300, context)
 
     expect(context.clearRect).toHaveBeenCalled();
   })

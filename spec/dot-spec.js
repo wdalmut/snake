@@ -14,7 +14,7 @@ describe("Dot", () => {
   it("should draw a dot", () => {
     spyOn(context, 'fillRect').and.callThrough();
 
-    dot(15, 15, context, 'black', 100, 100)
+    dot(15, 15, 'black', 100, 100, context)
 
     expect(context.fillRect).toHaveBeenCalled();
   })

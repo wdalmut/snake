@@ -12253,7 +12253,7 @@ exports.clearImmediate = typeof clearImmediate === "function" ? clearImmediate :
 },{"process/browser.js":1,"timers":331}],332:[function(require,module,exports){
 const { curry } = require('ramda')
 
-module.exports = curry((ctx, xs, ys, xe, ye) => {
+module.exports = curry((xs, ys, xe, ye, ctx) => {
   return ctx.clearRect(xs, ys, xe, ye);
 })
 
@@ -12285,38 +12285,7 @@ module.exports = {
 }
 
 },{}],334:[function(require,module,exports){
-const { curry } = require('ramda')
-
-module.exports = curry((w, h, ctx, color, x, y) => {
-  ctx.fillStyle = color;
-  ctx.fillRect(x, y, w, h);
-})
-
-},{"ramda":89}],335:[function(require,module,exports){
-const { curry, evolve, add, head, prepend, slice, compose, flip, modulo } = require('ramda')
-
-const modulo_with = flip(modulo)
-
-module.exports = curry((width, height, dx, dy, points) => {
-  let first = evolve({
-    x: compose(modulo_with(width), add(width), add(dx)),
-    y: compose(modulo_with(height), add(height), add(dy)),
-  }, head(points))
-
-  return prepend(first, points)
-})
-
-
-},{"ramda":89}],336:[function(require,module,exports){
-(function (setImmediate){
-
-const {
-  converge, map, prop, partial, evolve,
-  cond, T, compose, flip, modulo, equals,
-  always, path, identity, mergeDeepLeft,
-  tap, apply, props, multiply, not, lt,
-  gt, and, assoc, pick, lens, over, dec
-} = require('ramda')
+const { converge, map, prop, compose, flip, apply, } = require('ramda')
 
 const {
   state,
@@ -12326,15 +12295,59 @@ const {
 } = require('./defaults')
 
 const dot = require('./dot')
+
+const clear = require('./clear')
+
+const create_dot = dot(BLOCK_SIZE, BLOCK_SIZE)
+const black_dot = create_dot('black')
+const red_dot = create_dot('red')
+
+const draw_black_dot = converge(black_dot, [prop('x'), prop('y')])
+const draw_red_dot = converge(red_dot, [prop('x'), prop('y')])
+const clear_rect = clear(0, 0, WIDTH, HEIGHT)
+
+const draw_snake = compose(map(draw_black_dot), prop('snake'))
+const draw_food = compose(draw_red_dot, prop('food'))
+
+const apply_with = flip(apply)
+
+module.exports = {
+  clear_rect,
+  apply_with,
+  draw_food,
+  draw_snake,
+}
+
+},{"./clear":332,"./defaults":333,"./dot":335,"ramda":89}],335:[function(require,module,exports){
+const { curry } = require('ramda')
+
+module.exports = curry((w, h, color, x, y, ctx) => {
+  ctx.fillStyle = color;
+  ctx.fillRect(x, y, w, h);
+})
+
+},{"ramda":89}],336:[function(require,module,exports){
+const {
+  converge, prop, partial, evolve, cond, T, compose, equals,
+  always, identity, mergeDeepLeft, apply, props, not, lt, gt,
+  and, assoc, lens, over, dec,
+} = require('ramda')
+
+const {
+  BLOCK_SIZE,
+  WIDTH,
+  HEIGHT,
+} = require('./defaults')
+
+const reset_game = require('./reset-game')
+
 const grow = require('./grow')
 const move = require('./move')
-const clear = require('./clear')
-const play_board = require('./play-board')
+
 const is_on_food = require('./is-on-food')
 const is_collapsed = require('./is-collapsed')
 const random_position = require('./random-position')
 
-const reset_game = always(state)
 
 const random_position_x = partial(random_position, [WIDTH, BLOCK_SIZE])
 const random_position_y = partial(random_position, [HEIGHT, BLOCK_SIZE])
@@ -12376,28 +12389,53 @@ const game_step = cond([
   [otherwise, move_snake],
 ])
 
-const apply_state = compose(game_step, set_direction)
+module.exports = compose(game_step, set_direction)
 
-const canvas = play_board(WIDTH, HEIGHT)
-const create_dot = dot(BLOCK_SIZE, BLOCK_SIZE, canvas.getContext('2d'))
-const black_dot = create_dot('black')
-const red_dot = create_dot('red')
+},{"./defaults":333,"./grow":337,"./is-collapsed":339,"./is-on-food":340,"./move":341,"./random-position":343,"./reset-game":344,"ramda":89}],337:[function(require,module,exports){
+const { curry, evolve, add, head, prepend, slice, compose, flip, modulo } = require('ramda')
 
-const draw_black_dot = converge(black_dot, [prop('x'), prop('y')])
-const draw_red_dot = converge(red_dot, [prop('x'), prop('y')])
-const clear_all = partial(clear, [canvas.getContext('2d'), 0, 0, WIDTH, HEIGHT])
+const modulo_with = flip(modulo)
 
-const draw_snake = compose(map(draw_black_dot), prop('snake'))
-const draw_food = compose(draw_red_dot, prop('food'))
+module.exports = curry((width, height, dx, dy, points) => {
+  let first = evolve({
+    x: compose(modulo_with(width), add(width), add(dx)),
+    y: compose(modulo_with(height), add(height), add(dy)),
+  }, head(points))
 
-;(function(canvas, state) {
+  return prepend(first, points)
+})
+
+
+},{"ramda":89}],338:[function(require,module,exports){
+(function (setImmediate){
+;(function() {
+
+  const { map, assoc, prop, partial } = require('ramda')
+
+  const {WIDTH, HEIGHT} = require('./defaults')
+
+  const play_board = require('./play-board')
+
+  const apply_state = require('./game')
+  const reset_game = require('./reset-game')
+
+  const { clear_rect, apply_with, draw_snake, draw_food } = require('./display')
+
+  const canvas = play_board(WIDTH, HEIGHT)
+
+  const clear_all = partial(clear_rect, [canvas.getContext('2d')]);
+  const design_on_canvas = apply_with([canvas.getContext('2d')])
+  const design_list_on_canvas = map(design_on_canvas)
+
+  let state = reset_game()
 
   function play() {
     state = apply_state(state)
 
-    clear_all(state)
-    draw_snake(state)
-    draw_food(state)
+    clear_all()
+
+    design_list_on_canvas(draw_snake(state))
+    design_on_canvas(draw_food(state))
 
     setTimeout(play, state.speed)
   }
@@ -12407,22 +12445,23 @@ const draw_food = compose(draw_red_dot, prop('food'))
   canvas.addEventListener("keydown", (event) => {
     state = assoc('direction', prop('key', event), state)
   });
-})(canvas, reset_game())
+})()
+
 
 }).call(this,require("timers").setImmediate)
-},{"./clear":332,"./defaults":333,"./dot":334,"./grow":335,"./is-collapsed":337,"./is-on-food":338,"./move":339,"./play-board":340,"./random-position":341,"ramda":89,"timers":331}],337:[function(require,module,exports){
+},{"./defaults":333,"./display":334,"./game":336,"./play-board":342,"./reset-game":344,"ramda":89,"timers":331}],339:[function(require,module,exports){
 const { uniq, length } = require('ramda')
 
 module.exports = (points) => {
   return length(uniq(points)) != length(points)
 }
 
-},{"ramda":89}],338:[function(require,module,exports){
+},{"ramda":89}],340:[function(require,module,exports){
 const { contains } = require('ramda')
 
 module.exports = contains
 
-},{"ramda":89}],339:[function(require,module,exports){
+},{"ramda":89}],341:[function(require,module,exports){
 const grow = require('./grow')
 const { curry, evolve, add, head, prepend, slice, compose, } = require('ramda')
 
@@ -12430,7 +12469,7 @@ module.exports = curry((width, height, dx, dy, points) => {
   return compose(slice(0, -1), grow(width, height, dx, dy))(points)
 })
 
-},{"./grow":335,"ramda":89}],340:[function(require,module,exports){
+},{"./grow":337,"ramda":89}],342:[function(require,module,exports){
 
 module.exports = (width, height) => {
   let canvas = document.createElement('canvas');
@@ -12446,7 +12485,7 @@ module.exports = (width, height) => {
   return canvas
 }
 
-},{}],341:[function(require,module,exports){
+},{}],343:[function(require,module,exports){
 const {
   compose, multiply, flip, modulo
 } = require('ramda')
@@ -12455,4 +12494,11 @@ const get_valid_number = (size) => compose(multiply(size), Math.floor, multiply(
 
 module.exports = (width, size) => get_valid_number(size) % width
 
-},{"ramda":89}]},{},[336]);
+},{"ramda":89}],344:[function(require,module,exports){
+
+const { always } = require('ramda')
+const { state } = require('./defaults')
+
+module.exports = always(state)
+
+},{"./defaults":333,"ramda":89}]},{},[338]);

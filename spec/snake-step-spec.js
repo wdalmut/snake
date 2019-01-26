@@ -1,4 +1,4 @@
-const apply_state = require('../src/game')
+const snake_step = require('../src/snake-step')
 
 describe("Snake step", () => {
   [
@@ -66,7 +66,7 @@ describe("Snake step", () => {
     it("should take a step", () => {
       spyOn(Math, 'random').and.returnValue(0)
 
-      expect(apply_state(state)).toEqual(output)
+      expect(snake_step(state)).toEqual(output)
     })
   })
 })

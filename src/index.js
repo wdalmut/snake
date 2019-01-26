@@ -6,7 +6,7 @@
 
   const play_board = require('./play-board')
 
-  const apply_state = require('./game')
+  const apply_state = require('./apply-state')
   const reset_game = require('./reset-game')
 
   const { clear_rect, apply_with, draw_snake, draw_food } = require('./display')

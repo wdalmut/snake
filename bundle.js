@@ -12251,13 +12251,21 @@ exports.clearImmediate = typeof clearImmediate === "function" ? clearImmediate :
 };
 }).call(this,require("timers").setImmediate,require("timers").clearImmediate)
 },{"process/browser.js":1,"timers":331}],332:[function(require,module,exports){
+const { compose } = require('ramda')
+
+const snake_step = require('./snake-step')
+const set_direction = require('./set-direction')
+
+module.exports = compose(snake_step, set_direction)
+
+},{"./set-direction":351,"./snake-step":352,"ramda":89}],333:[function(require,module,exports){
 const { curry } = require('ramda')
 
 module.exports = curry((xs, ys, xe, ye, ctx) => {
   return ctx.clearRect(xs, ys, xe, ye);
 })
 
-},{"ramda":89}],333:[function(require,module,exports){
+},{"ramda":89}],334:[function(require,module,exports){
 const { partial, evolve } = require('ramda')
 const random_position = require('./random-position')
 const { WIDTH, HEIGHT, BLOCK_SIZE, } = require('./defaults')
@@ -12268,7 +12276,7 @@ const random_position_y = partial(random_position, [HEIGHT, BLOCK_SIZE])
 module.exports = evolve({x: random_position_x, y: random_position_y})
 
 
-},{"./defaults":334,"./random-position":349,"ramda":89}],334:[function(require,module,exports){
+},{"./defaults":335,"./random-position":349,"ramda":89}],335:[function(require,module,exports){
 const BLOCK_SIZE = 15
 const INITIAL_SNAKE_SPEED = 120
 const INITIAL_SNAKE = [{x: 150, y: 150}]
@@ -12295,7 +12303,7 @@ module.exports = {
   HEIGHT,
 }
 
-},{}],335:[function(require,module,exports){
+},{}],336:[function(require,module,exports){
 const { converge, map, prop, compose, flip, apply, } = require('ramda')
 
 const {
@@ -12329,7 +12337,7 @@ module.exports = {
   draw_snake,
 }
 
-},{"./clear":332,"./defaults":334,"./dot":336,"ramda":89}],336:[function(require,module,exports){
+},{"./clear":333,"./defaults":335,"./dot":337,"ramda":89}],337:[function(require,module,exports){
 const { curry } = require('ramda')
 
 module.exports = curry((w, h, color, x, y, ctx) => {
@@ -12337,15 +12345,7 @@ module.exports = curry((w, h, color, x, y, ctx) => {
   ctx.fillRect(x, y, w, h);
 })
 
-},{"ramda":89}],337:[function(require,module,exports){
-const { compose } = require('ramda')
-
-const snake_step = require('./snake-step')
-const set_direction = require('./set-direction')
-
-module.exports = compose(snake_step, set_direction)
-
-},{"./set-direction":351,"./snake-step":352,"ramda":89}],338:[function(require,module,exports){
+},{"ramda":89}],338:[function(require,module,exports){
 
 const { compose, evolve, dec } = require('ramda')
 
@@ -12355,7 +12355,7 @@ const create_food = require('./create-food')
 module.exports = compose(evolve({speed: dec, food: create_food}), grow_snake)
 
 
-},{"./create-food":333,"./grow-snake":339,"ramda":89}],339:[function(require,module,exports){
+},{"./create-food":334,"./grow-snake":339,"ramda":89}],339:[function(require,module,exports){
 
 const grow = require('./grow')
 const { lens, identity, assoc, over, compose, apply, props } = require('ramda')
@@ -12388,7 +12388,7 @@ module.exports = curry((width, height, dx, dy, points) => {
 
   const play_board = require('./play-board')
 
-  const apply_state = require('./game')
+  const apply_state = require('./apply-state')
   const reset_game = require('./reset-game')
 
   const { clear_rect, apply_with, draw_snake, draw_food } = require('./display')
@@ -12421,7 +12421,7 @@ module.exports = curry((width, height, dx, dy, points) => {
 
 
 }).call(this,require("timers").setImmediate)
-},{"./defaults":334,"./display":335,"./game":337,"./play-board":348,"./reset-game":350,"ramda":89,"timers":331}],342:[function(require,module,exports){
+},{"./apply-state":332,"./defaults":335,"./display":336,"./play-board":348,"./reset-game":350,"ramda":89,"timers":331}],342:[function(require,module,exports){
 const { uniq, length } = require('ramda')
 
 module.exports = (points) => {
@@ -12497,7 +12497,7 @@ const { state } = require('./defaults')
 
 module.exports = always(state)
 
-},{"./defaults":334,"ramda":89}],351:[function(require,module,exports){
+},{"./defaults":335,"ramda":89}],351:[function(require,module,exports){
 const {
   T, not, gt, lt, prop, compose, equals, cond, identity,
   converge, and, mergeDeepLeft,
@@ -12528,7 +12528,7 @@ module.exports = cond([
 ])
 
 
-},{"./defaults":334,"ramda":89}],352:[function(require,module,exports){
+},{"./defaults":335,"ramda":89}],352:[function(require,module,exports){
 const { T, cond } = require('ramda')
 
 const reset_game = require('./reset-game')

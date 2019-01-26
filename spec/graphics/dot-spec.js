@@ -1,4 +1,4 @@
-const dot = require('../src/dot')
+const dot = require('../../src/graphics/dot')
 
 describe("Dot", () => {
   let canvas = null

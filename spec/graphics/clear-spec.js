@@ -1,4 +1,4 @@
-const clear = require('../src/clear')
+const clear = require('../../src/graphics/clear')
 
 describe("Clear", () => {
   let canvas = null

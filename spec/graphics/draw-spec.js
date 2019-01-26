@@ -1,5 +1,5 @@
-const dot = require('../src/dot')
-const draw = require('../src/draw')
+const dot = require('../../src/graphics/dot')
+const draw = require('../../src/graphics/draw')
 
 const { map, apply, flip } = require('ramda')
 

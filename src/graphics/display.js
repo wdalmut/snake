@@ -5,7 +5,7 @@ const {
   BLOCK_SIZE,
   WIDTH,
   HEIGHT,
-} = require('./defaults')
+} = require('./../defaults')
 
 const dot = require('./dot')
 

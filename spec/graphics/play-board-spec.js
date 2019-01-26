@@ -1,4 +1,4 @@
-const play_board = require('../src/play-board')
+const play_board = require('../../src/graphics/play-board')
 
 describe("PlayBoard", () => {
   it("should append the canvas", () => {

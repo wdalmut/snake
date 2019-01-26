@@ -1,4 +1,4 @@
-const is_collapsed = require('../src/is-collapsed')
+const is_collapsed = require('../../src/game/is-collapsed')
 
 describe("Is collapsed", () => {
   [

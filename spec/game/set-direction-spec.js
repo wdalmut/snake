@@ -1,4 +1,4 @@
-const set_direction = require('../src/set-direction')
+const set_direction = require('../../src/game/set-direction')
 
 describe("set direction", () => {
   [

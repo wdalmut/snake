@@ -1,4 +1,4 @@
-const grow = require('../src/grow')
+const grow = require('../../src/game/grow')
 
 describe("Grow", () => {
   [

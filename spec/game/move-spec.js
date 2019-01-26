@@ -1,4 +1,4 @@
-const move = require('../src/move')
+const move = require('../../src/game/move')
 
 describe("Move", () => {
   [

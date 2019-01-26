@@ -1,4 +1,4 @@
-const is_on_food = require('../src/is-on-food')
+const is_on_food = require('../../src/game/is-on-food')
 
 describe("Is on food", () => {
   [

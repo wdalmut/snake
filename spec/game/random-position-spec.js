@@ -1,4 +1,4 @@
-const random_position = require('../src/random-position')
+const random_position = require('../../src/game/random-position')
 
 describe("Random position", () => {
   it("should reply with a random position", () => {

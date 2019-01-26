@@ -1,4 +1,4 @@
-const create_food = require('./../src/create-food')
+const create_food = require('./../../src/game/create-food')
 
 describe("Create Food", () => {
   it("should create food", () => {

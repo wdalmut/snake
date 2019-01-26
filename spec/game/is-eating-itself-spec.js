@@ -1,4 +1,4 @@
-const is_eating_itself = require('../src/is-eating-itself')
+const is_eating_itself = require('../../src/game/is-eating-itself')
 
 describe("Is eating itself", () => {
   [

@@ -1,4 +1,4 @@
-const snake_step = require('../src/snake-step')
+const snake_step = require('../../src/game/snake-step')
 
 describe("Snake step", () => {
   [

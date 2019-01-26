@@ -3,7 +3,7 @@ const {
   converge, and, mergeDeepLeft,
 } = require('ramda')
 
-const { BLOCK_SIZE } = require('./defaults')
+const { BLOCK_SIZE } = require('./../defaults')
 const is_pressed = key => compose(equals(key), prop('direction'))
 
 const is_not_going_up = compose(not, gt(0), prop('dy'))

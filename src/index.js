@@ -7,8 +7,8 @@
   const play_board = require('./graphics/play-board')
   const { clear_rect, apply_with, draw_snake, draw_food } = require('./graphics/display')
 
-  const apply_state = require('./apply-state')
-  const reset_game = require('./reset-game')
+  const apply_state = require('./game/apply-state')
+  const reset_game = require('./game/reset-game')
 
 
   const canvas = play_board(WIDTH, HEIGHT)

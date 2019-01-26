@@ -1,4 +1,4 @@
-const grow_snake_and_create_food = require('../src/grow-snake-and-create-food')
+const grow_snake_and_create_food = require('../../src/game/grow-snake-and-create-food')
 
 describe("Grow snake and create food", () => {
   it("should grow the snake and regenerate food", () => {

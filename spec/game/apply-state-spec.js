@@ -1,4 +1,4 @@
-const apply_state = require('../src/apply-state')
+const apply_state = require('../../src/game/apply-state')
 
 describe("Snake step", () => {
   [

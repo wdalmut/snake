@@ -12338,33 +12338,14 @@ module.exports = curry((w, h, color, x, y, ctx) => {
 })
 
 },{"ramda":89}],337:[function(require,module,exports){
-const {
-  T, cond, compose,
-} = require('ramda')
+const { compose } = require('ramda')
 
-const { BLOCK_SIZE } = require('./defaults')
-
-const reset_game = require('./reset-game')
-
-const move_snake = require('./move-snake')
-
-const is_eating_itself = require('./is-eating-itself')
-const is_eating = require('./is-eating')
-
-const grow_snake_and_create_food = require('./grow-snake-and-create-food')
-
+const snake_step = require('./snake-step')
 const set_direction = require('./set-direction')
 
-const otherwise = T
-const game_step = cond([
-  [is_eating_itself, reset_game],
-  [is_eating, grow_snake_and_create_food],
-  [otherwise, move_snake],
-])
+module.exports = compose(snake_step, set_direction)
 
-module.exports = compose(game_step, set_direction)
-
-},{"./defaults":334,"./grow-snake-and-create-food":338,"./is-eating":344,"./is-eating-itself":343,"./move-snake":346,"./reset-game":350,"./set-direction":351,"ramda":89}],338:[function(require,module,exports){
+},{"./set-direction":351,"./snake-step":352,"ramda":89}],338:[function(require,module,exports){
 
 const { compose, evolve, dec } = require('ramda')
 
@@ -12547,4 +12528,22 @@ module.exports = cond([
 ])
 
 
-},{"./defaults":334,"ramda":89}]},{},[341]);
+},{"./defaults":334,"ramda":89}],352:[function(require,module,exports){
+const { T, cond } = require('ramda')
+
+const reset_game = require('./reset-game')
+
+const is_eating = require('./is-eating')
+const move_snake = require('./move-snake')
+const is_eating_itself = require('./is-eating-itself')
+
+const grow_snake_and_create_food = require('./grow-snake-and-create-food')
+
+const otherwise = T
+module.exports = cond([
+  [is_eating_itself, reset_game],
+  [is_eating, grow_snake_and_create_food],
+  [otherwise, move_snake],
+])
+
+},{"./grow-snake-and-create-food":338,"./is-eating":344,"./is-eating-itself":343,"./move-snake":346,"./reset-game":350,"ramda":89}]},{},[341]);

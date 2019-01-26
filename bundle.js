@@ -12258,6 +12258,17 @@ module.exports = curry((xs, ys, xe, ye, ctx) => {
 })
 
 },{"ramda":89}],333:[function(require,module,exports){
+const { partial, evolve } = require('ramda')
+const random_position = require('./random-position')
+const { WIDTH, HEIGHT, BLOCK_SIZE, } = require('./defaults')
+
+const random_position_x = partial(random_position, [WIDTH, BLOCK_SIZE])
+const random_position_y = partial(random_position, [HEIGHT, BLOCK_SIZE])
+
+module.exports = evolve({x: random_position_x, y: random_position_y})
+
+
+},{"./defaults":334,"./random-position":348,"ramda":89}],334:[function(require,module,exports){
 const BLOCK_SIZE = 15
 const INITIAL_SNAKE_SPEED = 120
 const INITIAL_SNAKE = [{x: 150, y: 150}]
@@ -12284,7 +12295,7 @@ module.exports = {
   HEIGHT,
 }
 
-},{}],334:[function(require,module,exports){
+},{}],335:[function(require,module,exports){
 const { converge, map, prop, compose, flip, apply, } = require('ramda')
 
 const {
@@ -12318,7 +12329,7 @@ module.exports = {
   draw_snake,
 }
 
-},{"./clear":332,"./defaults":333,"./dot":335,"ramda":89}],335:[function(require,module,exports){
+},{"./clear":332,"./defaults":334,"./dot":336,"ramda":89}],336:[function(require,module,exports){
 const { curry } = require('ramda')
 
 module.exports = curry((w, h, color, x, y, ctx) => {
@@ -12326,7 +12337,7 @@ module.exports = curry((w, h, color, x, y, ctx) => {
   ctx.fillRect(x, y, w, h);
 })
 
-},{"ramda":89}],336:[function(require,module,exports){
+},{"ramda":89}],337:[function(require,module,exports){
 const {
   converge, prop, partial, evolve, cond, T, compose, equals,
   always, identity, mergeDeepLeft, apply, props, not, lt, gt,
@@ -12341,30 +12352,19 @@ const {
 
 const reset_game = require('./reset-game')
 
-const grow = require('./grow')
-const move = require('./move')
+const move_snake = require('./move-snake')
+const grow_snake = require('./grow-snake')
 
-const is_on_food = require('./is-on-food')
-const is_collapsed = require('./is-collapsed')
-const random_position = require('./random-position')
+const is_eating_itself = require('./is-eating-itself')
+const is_eating = require('./is-eating')
 
-
-const random_position_x = partial(random_position, [WIDTH, BLOCK_SIZE])
-const random_position_y = partial(random_position, [HEIGHT, BLOCK_SIZE])
-const create_food = evolve({x: random_position_x, y: random_position_y})
+const create_food = require('./create-food')
 
 const is_pressed = key => compose(equals(key), prop('direction'))
 const is_not_going_up = compose(not, gt(0), prop('dy'))
 const is_not_going_left = compose(not, gt(0), prop('dx'))
 const is_not_going_down = compose(not, lt(0), prop('dy'))
 const is_not_going_right = compose(not, lt(0), prop('dx'))
-
-const is_eating_itself = compose(is_collapsed, prop('snake'))
-const is_eating = compose(apply(is_on_food), props(['food', 'snake']))
-
-const snake_lens = lens(identity, assoc('snake'))
-const move_snake = over(snake_lens, compose(apply(move), props(['width', 'height', 'dx', 'dy', 'snake'])))
-const grow_snake = over(snake_lens, compose(apply(grow), props(['width', 'height', 'dx', 'dy', 'snake'])))
 
 const otherwise = T
 const keep_going = identity
@@ -12391,7 +12391,15 @@ const game_step = cond([
 
 module.exports = compose(game_step, set_direction)
 
-},{"./defaults":333,"./grow":337,"./is-collapsed":339,"./is-on-food":340,"./move":341,"./random-position":343,"./reset-game":344,"ramda":89}],337:[function(require,module,exports){
+},{"./create-food":333,"./defaults":334,"./grow-snake":338,"./is-eating":343,"./is-eating-itself":342,"./move-snake":345,"./reset-game":349,"ramda":89}],338:[function(require,module,exports){
+
+const grow = require('./grow')
+const { lens, identity, assoc, over, compose, apply, props } = require('ramda')
+
+const snake_lens = lens(identity, assoc('snake'))
+module.exports = over(snake_lens, compose(apply(grow), props(['width', 'height', 'dx', 'dy', 'snake'])))
+
+},{"./grow":339,"ramda":89}],339:[function(require,module,exports){
 const { curry, evolve, add, head, prepend, slice, compose, flip, modulo } = require('ramda')
 
 const modulo_with = flip(modulo)
@@ -12406,7 +12414,7 @@ module.exports = curry((width, height, dx, dy, points) => {
 })
 
 
-},{"ramda":89}],338:[function(require,module,exports){
+},{"ramda":89}],340:[function(require,module,exports){
 (function (setImmediate){
 ;(function() {
 
@@ -12449,19 +12457,43 @@ module.exports = curry((width, height, dx, dy, points) => {
 
 
 }).call(this,require("timers").setImmediate)
-},{"./defaults":333,"./display":334,"./game":336,"./play-board":342,"./reset-game":344,"ramda":89,"timers":331}],339:[function(require,module,exports){
+},{"./defaults":334,"./display":335,"./game":337,"./play-board":347,"./reset-game":349,"ramda":89,"timers":331}],341:[function(require,module,exports){
 const { uniq, length } = require('ramda')
 
 module.exports = (points) => {
   return length(uniq(points)) != length(points)
 }
 
-},{"ramda":89}],340:[function(require,module,exports){
+},{"ramda":89}],342:[function(require,module,exports){
+const { compose, prop } = require('ramda')
+
+const is_collapsed = require('./is-collapsed')
+
+module.exports = compose(is_collapsed, prop('snake'))
+
+
+},{"./is-collapsed":341,"ramda":89}],343:[function(require,module,exports){
+const { compose, apply, props } = require('ramda')
+const is_on_food = require('./is-on-food')
+
+module.exports = compose(apply(is_on_food), props(['food', 'snake']))
+
+},{"./is-on-food":344,"ramda":89}],344:[function(require,module,exports){
 const { contains } = require('ramda')
 
 module.exports = contains
 
-},{"ramda":89}],341:[function(require,module,exports){
+},{"ramda":89}],345:[function(require,module,exports){
+
+const move = require('./move')
+const { lens, over, apply, compose, props, assoc, identity } = require('ramda')
+
+const snake_lens = lens(identity, assoc('snake'))
+
+module.exports = over(snake_lens, compose(apply(move), props(['width', 'height', 'dx', 'dy', 'snake'])))
+
+
+},{"./move":346,"ramda":89}],346:[function(require,module,exports){
 const grow = require('./grow')
 const { curry, evolve, add, head, prepend, slice, compose, } = require('ramda')
 
@@ -12469,7 +12501,7 @@ module.exports = curry((width, height, dx, dy, points) => {
   return compose(slice(0, -1), grow(width, height, dx, dy))(points)
 })
 
-},{"./grow":337,"ramda":89}],342:[function(require,module,exports){
+},{"./grow":339,"ramda":89}],347:[function(require,module,exports){
 
 module.exports = (width, height) => {
   let canvas = document.createElement('canvas');
@@ -12485,7 +12517,7 @@ module.exports = (width, height) => {
   return canvas
 }
 
-},{}],343:[function(require,module,exports){
+},{}],348:[function(require,module,exports){
 const {
   compose, multiply, flip, modulo
 } = require('ramda')
@@ -12494,11 +12526,11 @@ const get_valid_number = (size) => compose(multiply(size), Math.floor, multiply(
 
 module.exports = (width, size) => get_valid_number(size) % width
 
-},{"ramda":89}],344:[function(require,module,exports){
+},{"ramda":89}],349:[function(require,module,exports){
 
 const { always } = require('ramda')
 const { state } = require('./defaults')
 
 module.exports = always(state)
 
-},{"./defaults":333,"ramda":89}]},{},[338]);
+},{"./defaults":334,"ramda":89}]},{},[340]);

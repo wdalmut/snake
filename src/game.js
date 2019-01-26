@@ -12,30 +12,19 @@ const {
 
 const reset_game = require('./reset-game')
 
-const grow = require('./grow')
-const move = require('./move')
+const move_snake = require('./move-snake')
+const grow_snake = require('./grow-snake')
 
-const is_on_food = require('./is-on-food')
-const is_collapsed = require('./is-collapsed')
-const random_position = require('./random-position')
+const is_eating_itself = require('./is-eating-itself')
+const is_eating = require('./is-eating')
 
-
-const random_position_x = partial(random_position, [WIDTH, BLOCK_SIZE])
-const random_position_y = partial(random_position, [HEIGHT, BLOCK_SIZE])
-const create_food = evolve({x: random_position_x, y: random_position_y})
+const create_food = require('./create-food')
 
 const is_pressed = key => compose(equals(key), prop('direction'))
 const is_not_going_up = compose(not, gt(0), prop('dy'))
 const is_not_going_left = compose(not, gt(0), prop('dx'))
 const is_not_going_down = compose(not, lt(0), prop('dy'))
 const is_not_going_right = compose(not, lt(0), prop('dx'))
-
-const is_eating_itself = compose(is_collapsed, prop('snake'))
-const is_eating = compose(apply(is_on_food), props(['food', 'snake']))
-
-const snake_lens = lens(identity, assoc('snake'))
-const move_snake = over(snake_lens, compose(apply(move), props(['width', 'height', 'dx', 'dy', 'snake'])))
-const grow_snake = over(snake_lens, compose(apply(grow), props(['width', 'height', 'dx', 'dy', 'snake'])))
 
 const otherwise = T
 const keep_going = identity

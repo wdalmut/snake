@@ -12486,12 +12486,13 @@ module.exports = curry((w, h, color, x, y, ctx) => {
 })
 
 },{"ramda":89}],351:[function(require,module,exports){
+const { WIDTH, HEIGHT } = require('../defaults')
 
-module.exports = (width, height) => {
+module.exports = () => {
   let canvas = document.createElement('canvas');
   canvas.tabIndex = 1000;
-  canvas.width = width
-  canvas.height = height
+  canvas.width = WIDTH
+  canvas.height = HEIGHT
   canvas.style = 'border: 2px solid #000;'
 
   document.getElementsByTagName('body').item(0).appendChild(canvas)
@@ -12501,29 +12502,26 @@ module.exports = (width, height) => {
   return canvas
 }
 
-},{}],352:[function(require,module,exports){
+},{"../defaults":332}],352:[function(require,module,exports){
 (function (setImmediate){
 ;(function() {
-
   const { assoc, prop } = require('ramda')
 
-  const {WIDTH, HEIGHT} = require('./defaults')
-
-  const play_board = require('./graphics/play-board')
+  const create_play_board = require('./graphics/play-board')
+  const canvas = create_play_board()
 
   const draw = require('./graphics/display')
+  const draw_on_canvas = draw(canvas.getContext('2d'))
 
   const apply_state = require('./game/apply-state')
   const reset_game = require('./game/reset-game')
-
-  const canvas = play_board(WIDTH, HEIGHT)
 
   let state = reset_game()
 
   function play() {
     state = apply_state(state)
 
-    draw(canvas.getContext('2d'), state)
+    draw_on_canvas(state)
 
     setTimeout(play, state.speed)
   }
@@ -12537,4 +12535,4 @@ module.exports = (width, height) => {
 
 
 }).call(this,require("timers").setImmediate)
-},{"./defaults":332,"./game/apply-state":333,"./game/reset-game":345,"./graphics/display":349,"./graphics/play-board":351,"ramda":89,"timers":331}]},{},[352]);
+},{"./game/apply-state":333,"./game/reset-game":345,"./graphics/display":349,"./graphics/play-board":351,"ramda":89,"timers":331}]},{},[352]);

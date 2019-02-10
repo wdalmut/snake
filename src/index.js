@@ -1,18 +1,14 @@
 ;(function() {
-
   const { assoc, prop } = require('ramda')
 
-  const {WIDTH, HEIGHT} = require('./defaults')
-
-  const play_board = require('./graphics/play-board')
-  const canvas = play_board(WIDTH, HEIGHT)
+  const create_play_board = require('./graphics/play-board')
+  const canvas = create_play_board()
 
   const draw = require('./graphics/display')
   const draw_on_canvas = draw(canvas.getContext('2d'))
 
   const apply_state = require('./game/apply-state')
   const reset_game = require('./game/reset-game')
-
 
   let state = reset_game()
 

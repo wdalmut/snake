@@ -1,9 +1,10 @@
+const { WIDTH, HEIGHT } = require('../defaults')
 
-module.exports = (width, height) => {
+module.exports = () => {
   let canvas = document.createElement('canvas');
   canvas.tabIndex = 1000;
-  canvas.width = width
-  canvas.height = height
+  canvas.width = WIDTH
+  canvas.height = HEIGHT
   canvas.style = 'border: 2px solid #000;'
 
   document.getElementsByTagName('body').item(0).appendChild(canvas)

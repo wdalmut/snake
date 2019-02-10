@@ -1,4 +1,4 @@
-const { converge, map, prop, compose, flip, apply, } = require('ramda')
+const { converge, map, prop, compose, flip, apply, ap, curry, concat, partial } = require('ramda')
 
 const {
   state,
@@ -22,11 +22,9 @@ const clear_rect = clear(0, 0, WIDTH, HEIGHT)
 const draw_snake = compose(map(draw_black_dot), prop('snake'))
 const draw_food = compose(draw_red_dot, prop('food'))
 
-const apply_with = flip(apply)
+const draw = curry((context, state) => {
+  clear_rect(context)
+  ap(concat(draw_snake(state), [draw_food(state)]), [context])
+})
 
-module.exports = {
-  clear_rect,
-  apply_with,
-  draw_food,
-  draw_snake,
-}
+module.exports = draw

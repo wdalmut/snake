@@ -12446,7 +12446,7 @@ module.exports = curry((xs, ys, xe, ye, ctx) => {
 })
 
 },{"ramda":89}],349:[function(require,module,exports){
-const { converge, map, prop, compose, flip, apply, } = require('ramda')
+const { converge, map, prop, compose, flip, apply, ap, curry, concat, partial } = require('ramda')
 
 const {
   state,
@@ -12470,14 +12470,12 @@ const clear_rect = clear(0, 0, WIDTH, HEIGHT)
 const draw_snake = compose(map(draw_black_dot), prop('snake'))
 const draw_food = compose(draw_red_dot, prop('food'))
 
-const apply_with = flip(apply)
+const draw = curry((context, state) => {
+  clear_rect(context)
+  ap(concat(draw_snake(state), [draw_food(state)]), [context])
+})
 
-module.exports = {
-  clear_rect,
-  apply_with,
-  draw_food,
-  draw_snake,
-}
+module.exports = draw
 
 },{"./../defaults":332,"./clear":348,"./dot":350,"ramda":89}],350:[function(require,module,exports){
 const { curry } = require('ramda')
@@ -12507,32 +12505,25 @@ module.exports = (width, height) => {
 (function (setImmediate){
 ;(function() {
 
-  const { map, assoc, prop, partial } = require('ramda')
+  const { assoc, prop } = require('ramda')
 
   const {WIDTH, HEIGHT} = require('./defaults')
 
   const play_board = require('./graphics/play-board')
-  const { clear_rect, apply_with, draw_snake, draw_food } = require('./graphics/display')
+
+  const draw = require('./graphics/display')
 
   const apply_state = require('./game/apply-state')
   const reset_game = require('./game/reset-game')
 
-
   const canvas = play_board(WIDTH, HEIGHT)
-
-  const clear_all = partial(clear_rect, [canvas.getContext('2d')]);
-  const design_on_canvas = apply_with([canvas.getContext('2d')])
-  const design_list_on_canvas = map(design_on_canvas)
 
   let state = reset_game()
 
   function play() {
     state = apply_state(state)
 
-    clear_all()
-
-    design_list_on_canvas(draw_snake(state))
-    design_on_canvas(draw_food(state))
+    draw(canvas.getContext('2d'), state)
 
     setTimeout(play, state.speed)
   }
